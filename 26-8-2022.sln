@@ -1,0 +1,35 @@
+using System.Configuration;
+using System.Data.SqlClient;
+
+namespace day11;
+public class one
+{
+    public static void Main(string[] args)
+    {
+        string connection = ConfigurationManager.ConnectionStrings["Mykey"].ConnectionString;
+        SqlConnection sqlcon = new SqlConnection(connection);
+        sqlcon.Open();
+        Console.WriteLine("Account details");
+        int amt=Convert.ToInt32(Console.ReadLine());
+        SqlCommand cmd = new SqlCommand("select * from highamt(@amt)", sqlcon);
+        cmd.Parameters.Add("@amt", System.Data.SqlDbType.Int).Value = amt;
+        SqlDataReader dr = cmd.ExecuteReader();
+        if(dr.HasRows)
+        {
+           Console.WriteLine("Accountnumber" + " " + "Customername" + "  " + "Aadharnumber" + "  " +
+                   "Account opened date" + "  " + "date of last transaction");
+
+            while (dr.Read())
+            {
+                Console.WriteLine(dr[0].ToString() + "       " + dr[1].ToString() + "       " + dr[2].ToString()
+                    + "      " + dr[3].ToString() + "        " + dr[4].ToString());
+            }
+        }
+        else
+        {
+            Console.WriteLine("Amount is out of limit");
+        }
+        dr.Close();
+        sqlcon.Close();
+    }
+}
