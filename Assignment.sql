@@ -24,8 +24,8 @@ begin
     insert into @AccInfo
 	select Cid,Amt from AccInfo where AccType=@at;
 	
-update @AccInfo set Amt=(case WHEN AccType='Savings' THEN Amt+(10*Amt)/100 
-                WHEN  AccType='current'  THEN Amt+(5*Amt)/100
+update @AccInfo set Amt=(case WHEN @at='Savings' THEN Amt+(10*Amt)/100 
+                WHEN  @at='current'  THEN Amt+(5*Amt)/100
                 else Amt
 				end);
 
