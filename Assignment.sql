@@ -40,18 +40,30 @@ exec interest 'savings'
 3.Write a UDF to get the sales values of a particular region. Call another function within to calculate the average sales of that region.
 Input: for example, Delhi
 
-create function avgsales(@region varchar(10))
-returns float as
+create type salesval as table(
+salesval int
+)
+
+select * from @salesval
+
+create or alter function avgsales(@salesval salesval READONLY)
+returns int as
 begin
-declare @a float
-select @a=avg(Amt) from Sales where Region=@region
-return @a
+declare @avg int
+select @avg=(select avg(salesval) from @salesval) 
+return @avg
 end;
 
-select student.dbo.avgsales('delhi')
 
-create or alter procedure salesvalue @region varchar(10) as
-select Amt,Region from Sales where Region=@region;
-select student.dbo.avgsales(@region)
+create  or alter function salesvalue(@region varchar(10))
+returns int as
+begin
+declare @avg int
+declare @salesval as salesval
+insert into @salesval
+select Amt from Sales where Region=@region;
+select @avg=(select dbo.avgsales(@salesval))
+return @avg
+end;
 
-exec salesvalue 'delhi'
+select dbo.salesvalue('delhi') as average
